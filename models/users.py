@@ -10,7 +10,7 @@ class User:
 
 
 class UserDAO:
-    def __init__(self, db_path="system.db",):
+    def __init__(self, db_path="database/system.db",):
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.create_table()
@@ -25,17 +25,17 @@ class UserDAO:
             isadm TEXT NOT NULL CHECK(isadm IN('adm', 'client'))
     )
     """)
-        self.commit()
+        self.conn.commit()
 
     def register(self, user):
         try:
             self.cursor.execute("INSERT INTO users (name, mail, password, isadm) VALUES (?, ?, ?, ?)",
-                                (user.name, user.email, user.password, user.isadm))
-            self.conn.commit
+                                (user.name, user.mail, user.password, user.isadm))
+            self.conn.commit()
         except sqlite3.IntegrityError:
             print("EMAIL JA CADASTRADO.")
 
     def authenticate(self, mail, password):
         self.cursor.execute(
-            "SELECT name, mail, isamd FROM users WHERE mail = ? AND password = ?", (mail, password))
+            "SELECT name, mail, isadm FROM users WHERE mail = ? AND password = ?", (mail, password))
         return self.cursor.fetchone()
