@@ -96,6 +96,36 @@ def admin_menu(user_id):
             print(
                 f"{product_name}, {product_quantity}, R$ {product_price:.2f} foi adicionado com sucesso.")
             pause()
+        elif sub_option == 2:
+            clear()
+            products = storage_DAO.show_products(user_id)
+            if not products:
+                print("Nenhum produto cadastrado!")
+            else:
+                total_price = 0
+                print("\nID | NOME | QUANTIDADE | PREÇO")
+                for p in products:
+                    subtotal = p[2] * p[3]
+                    total_price += subtotal
+
+                    print(
+                        f"{p[0]} | {p[1]} | {p[2]} UN | R$ {p[3]:.2f} | R$ {subtotal:.2f}")
+
+                    print("-" * 50)
+                    print(
+                        f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {total_price:.2f}")
+                pause()
+                clear()
+        elif sub_option == 3:
+            clear()
+            while True:
+                print("""
+[1]ATUALIZAR NOME
+[2]ATUALIZAR ESTOQUE
+[3]ATUALIZAR PREÇO
+[4] SAIR
+                      """)
+                update_options = int(input("DIGITE A OPÇÃO: "))
 
         elif sub_option == 5:
             print("SAINDO")
