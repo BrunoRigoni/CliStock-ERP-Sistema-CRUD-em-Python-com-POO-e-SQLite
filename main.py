@@ -27,7 +27,7 @@ def main_menu():
             try:
                 password = getpass.getpass("SENHA: ")
             except Exception as e:
-                print("Digite uma senha válida.")
+                print(f"Digite uma senha válida. {e}")
                 continue
             isadm = input("[ADM]|[CLIENT: ] ").lower()
 
