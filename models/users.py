@@ -37,5 +37,5 @@ class UserDAO:
 
     def authenticate(self, mail, password):
         self.cursor.execute(
-            "SELECT name, mail, isadm FROM users WHERE mail = ? AND password = ?", (mail, password))
+            "SELECT id, name, mail, isadm FROM users WHERE mail = ? AND password = ?", (mail, password))
         return self.cursor.fetchone()

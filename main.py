@@ -10,18 +10,16 @@ def main_menu():
 
     while True:
         print("""
-                   MENU PRINCIPAL
-              ______________________
-              [   [1]. CADASTRAR   ]
-              \n
-              [   [2]. LOGIN       ]
-              \n
-              [   [3]. SAIR        ]
+===== MENU PRINCIPAL =====
+[1] Cadastrar
+[2] Login
+[3] Sair
 """)
         try:
             option = int(input(f"\n [Choose an Option: "))
         except ValueError:
             print("Digite uma opção válida.")
+            continue
 
         if option == 1:
             name = input("NOME: ")
@@ -48,10 +46,10 @@ def main_menu():
             user = user_dao.authenticate(mail, password)
 
             if user:
-                name, mail, isadm = user
+                user_id, name, mail, isadm = user
                 print(f"\n Seja bem vindo {name}!")
                 if isadm == "adm":
-                    admin_menu(name)
+                    admin_menu(user_id)
                 elif isadm == "client":
                     client_menu(name)
                 else:

@@ -1,6 +1,9 @@
 from models.users import User, UserDAO
+from models.users import User, UserDAO
+from utils.utils import clear, pause
+import os
+import sqlite3
 
 
 def client_menu(name):
-    print(
-        f"\n[Cliente] Acesso autorizado, {name}. Em breve: Visualização de produtos.")
+    print("client menu será aqui!")
