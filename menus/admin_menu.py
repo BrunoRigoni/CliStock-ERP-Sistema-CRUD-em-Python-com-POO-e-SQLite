@@ -122,7 +122,7 @@ def admin_menu(user_id):
             if not products:
                 print("Nenhum produto cadastrado!")
             else:
-                simple_products(user_id, products)
+                detailed_products(user_id, products)
                 pause()
                 clear()
         elif sub_option == 3:
@@ -155,7 +155,7 @@ def admin_menu(user_id):
                             print("Digite um ID válido.")
                             continue
                         name_update = input("NOVO NOME: ")
-                        storage_DAO.update_product_name(name_update, id_update)
+                        storage_DAO.update_product_name(id_update, name_update)
                         print(
                             f"O nome do produto ID {id_update} foi alterado para -> {name_update}")
                         pause()
