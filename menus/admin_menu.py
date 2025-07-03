@@ -21,6 +21,7 @@ class storageDAO:
         self.connect = sqlite3.connect(db_path)
         self.cursor = self.connect.cursor()
         self.create_product_table()
+        self.create_order_table()
 
     def create_product_table(self):
         self.cursor.execute("""
@@ -69,6 +70,48 @@ class storageDAO:
     def get_produtcs_client(self):
         self.cursor.execute("SELECT id, name, quantity, price FROM products")
         return self.cursor.fetchall()
+
+    def create_order(self):
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS orders(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) PREFERENCES users(id)
+        FOREIGN KEY (product_id) PREFERENCES products(id)                 
+                            )
+""")
+        self.connect.commit()
+
+    def create_order(self, user_id, product_id, quantity):
+        # Verificar se o produto existe e tem estoque suficiente
+        self.cursor.execute("""
+        SELECT quantity FROM products WHERE id = ?
+""", (product_id,))
+        result = self.cursor.fetchone()
+
+        if not result:
+            return "Produto não encontrado."
+        current_storage = result[0]
+
+        if current_storage < quantity:
+            return "Estoque insuficiente"
+        # Registrar o pedido
+        self.cursor.execute("""
+        INSERT INTO orders (user_id, products_id, quantity) VALUES (?, ?, ?)
+""", (user_id, product_id, quantity)
+        )
+
+        # Atualizar estoque
+        new_storage = current_storage - quantity
+        self.cursor.execute("""
+        UPDATE products SET quantity = ? WHERE id = ?
+                            """, (new_storage, product_id))
+
+        self.connect.commit()
+        return "Pedido realizado com sucesso!"
 
 
 def detailed_products(user_id, products):
