@@ -60,10 +60,10 @@ Durante o desenvolvimento, aprofundei meus conhecimentos em:
 ## Como Executar
 
 1. Clone o repositório:
-git clone "https://github.com/BrunoRigoni/POO---SQLite-project"
+git clone "https://github.com/BrunoRigoni/CliStock-ERP-Sistema-CRUD-em-Python-com-POO-e-SQLite"
 
 2. Navegue até a pasta do projeto:
-cd POO---SQLite-project
+cd CliStock-ERP-Sistema-CRUD-em-Python-com-POO-e-SQLite
 
 3. Execute o script principal:
 python main.py
