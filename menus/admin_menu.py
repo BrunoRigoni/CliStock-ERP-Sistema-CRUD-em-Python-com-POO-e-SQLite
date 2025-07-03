@@ -14,8 +14,9 @@ class Product:
 class storageDAO:
     def __init__(self, db_path=None):
         if not db_path:
-            db_path = os.path.join(os.path.dirname(
-                __file__), "..", 'database', 'system.db')
+            db_path = os.path.join(
+                os.path.dirname(__file__), "..", "database", "system.db"
+            )
             db_path = os.path.abspath(db_path)
 
         self.connect = sqlite3.connect(db_path)
@@ -24,7 +25,8 @@ class storageDAO:
         self.create_order()
 
     def create_product_table(self):
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -34,33 +36,38 @@ class storageDAO:
             FOREIGN KEY(user_id) REFERENCES users(id)
 
                 )
-        """)
+        """
+        )
         self.connect.commit()
 
     def add_product(self, product, user_id):
-        self.cursor.execute("INSERT INTO products (name, quantity, price, user_id) VALUES (?, ? , ?, ?)",
-                            (product.name, product.quantity, product.price, user_id)
-                            )
+        self.cursor.execute(
+            "INSERT INTO products (name, quantity, price, user_id) VALUES (?, ? , ?, ?)",
+            (product.name, product.quantity, product.price, user_id),
+        )
         self.connect.commit()
 
     def show_products(self, user_id):
         self.cursor.execute(
-            "SELECT id, name, quantity, price FROM products WHERE user_id = ?", (user_id,))
+            "SELECT id, name, quantity, price FROM products WHERE user_id = ?",
+            (user_id,),
+        )
         return self.cursor.fetchall()
 
     def update_product_name(self, id, new_name):
-        self.cursor.execute(
-            "UPDATE products SET name = ? WHERE id = ?", (new_name, id))
+        self.cursor.execute("UPDATE products SET name = ? WHERE id = ?", (new_name, id))
         self.connect.commit()
 
     def update_product_quantity(self, id, new_quantity):
         self.cursor.execute(
-            "UPDATE products SET quantity = ? WHERE id = ?", (new_quantity, id))
+            "UPDATE products SET quantity = ? WHERE id = ?", (new_quantity, id)
+        )
         self.connect.commit()
 
     def update_product_price(self, id, new_price):
         self.cursor.execute(
-            "UPDATE products SET price = ? WHERE id = ?", (new_price, id))
+            "UPDATE products SET price = ? WHERE id = ?", (new_price, id)
+        )
         self.connect.commit()
 
     def remove(self, id):
@@ -72,7 +79,8 @@ class storageDAO:
         return self.cursor.fetchall()
 
     def create_order(self):
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS new_order (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -82,14 +90,18 @@ class storageDAO:
             FOREIGN KEY(user_id) REFERENCES users(id),
             FOREIGN KEY(product_id) REFERENCES products(id)
                             )
-""")
+"""
+        )
         self.connect.commit()
 
     def create_new_order(self, user_id, product_id, quantity):
         # Verificar se o produto existe e tem estoque suficiente
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         SELECT quantity FROM products WHERE id = ?
-""", (product_id,))
+""",
+            (product_id,),
+        )
 
         result = self.cursor.fetchone()
 
@@ -101,38 +113,51 @@ class storageDAO:
         if current_storage < quantity:
             return "Estoque insuficiente"
         # Registrar o pedido
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         INSERT INTO new_order (user_id, product_id, quantity) VALUES (?, ?, ?)
-""", (user_id, product_id, quantity)
+""",
+            (user_id, product_id, quantity),
         )
 
         # Atualizar estoque
         new_storage = current_storage - quantity
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         UPDATE products SET quantity = ? WHERE id = ?
-                            """, (new_storage, product_id))
+                            """,
+            (new_storage, product_id),
+        )
 
         self.connect.commit()
         return "Pedido realizado com sucesso!"
 
-    def get_client_orders(self, user_id,):
-        self.cursor.execute("""
+    def get_client_orders(
+        self,
+        user_id,
+    ):
+        self.cursor.execute(
+            """
         SELECT o.id, p.name, o.quantity, p.price, o.data
         FROM new_order o
         JOIN products p ON o.product_id = p.id
         WHERE o.user_id = ?
         ORDER BY o.data DESC
- """, (user_id,))
+ """,
+            (user_id,),
+        )
         return self.cursor.fetchall()
 
     def get_all_orders(self):
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         SELECT o.id, u.name AS client, p.name AS products, o.quantity, p.price, o.data
         FROM new_order o
         JOIN users u ON o.user_id = u.id
         JOIN products p ON o.product_id = p.id
         ORDER BY o.data DESC
- """)
+ """
+        )
         return self.cursor.fetchall()
 
 
@@ -143,31 +168,36 @@ def detailed_products(user_id, products):
         subtotal = p[2] * p[3]
         total_price += subtotal
         print(
-            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {p[3]:.2f} | R$ {str(f'{subtotal:.2f}').replace('.', ',')}")
+            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {p[3]:.2f} | R$ {str(f'{subtotal:.2f}').replace('.', ',')}"
+        )
     print("-" * 50)
     print(
-        f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {str(f'{total_price:.2f}').replace('.', ',')}")
+        f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {str(f'{total_price:.2f}').replace('.', ',')}"
+    )
 
 
 def simple_products(products):
     print("\nID | NOME | QUANTIDADE | PREÇO")
     for p in products:
         print(
-            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {str(f'{p[3]:.2f}').replace('.', ',')}")
+            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {str(f'{p[3]:.2f}').replace('.', ',')}"
+        )
 
 
 def admin_menu(user_id, name):
     storage_DAO = storageDAO()
     while True:
         print(f"Seja bem vindo {name}!")
-        print("""
+        print(
+            """
         [1] ADICIONAR PRODUTO
         [2] LISTAR
         [3] ATUALIZAR PRODUTO
         [4] REMOVER PRODUTO
         [5] VER TODOS OS PEDIDOS
         [6] VOLTAR
- """)
+ """
+        )
         try:
             sub_option = int(input("\nDIGITE A OPÇÃO: "))
         except ValueError:
@@ -179,13 +209,13 @@ def admin_menu(user_id, name):
             print("- PARA ADICIONAR PRODUTO, DIGITE AS INFORMAÇÕES A SEGUIR -")
             product_name = input("NOME DO PRODUTO: ")
             product_quantity = int(input("QUANTIDADE: UN"))
-            product_price = float(input("PREÇO: R$").replace(',', '.'))
-            new_product = Product(
-                product_name, product_quantity, product_price)
+            product_price = float(input("PREÇO: R$").replace(",", "."))
+            new_product = Product(product_name, product_quantity, product_price)
             storage_DAO.add_product(new_product, user_id)
             clear()
             print(
-                f"{product_name}, {product_quantity}, R$ {product_price:.2f} foi adicionado com sucesso.")
+                f"{product_name}, {product_quantity}, R$ {product_price:.2f} foi adicionado com sucesso."
+            )
             pause()
         elif sub_option == 2:
             clear()
@@ -199,12 +229,14 @@ def admin_menu(user_id, name):
         elif sub_option == 3:
             clear()
             while True:
-                print("""
+                print(
+                    """
 [1]ATUALIZAR NOME
 [2]ATUALIZAR ESTOQUE
 [3]ATUALIZAR PREÇO
 [4] SAIR
-                      """)
+                      """
+                )
                 products = storage_DAO.show_products(user_id)
                 try:
                     update_options = int(input("DIGITE A OPÇÃO: "))
@@ -221,14 +253,16 @@ def admin_menu(user_id, name):
 
                         try:
                             id_update = int(
-                                input("ID do produto que deseja alterar o nome: "))
+                                input("ID do produto que deseja alterar o nome: ")
+                            )
                         except ValueError:
                             print("Digite um ID válido.")
                             continue
                         name_update = input("NOVO NOME: ")
                         storage_DAO.update_product_name(id_update, name_update)
                         print(
-                            f"O nome do produto ID {id_update} foi alterado para -> {name_update}")
+                            f"O nome do produto ID {id_update} foi alterado para -> {name_update}"
+                        )
                         pause()
                 elif update_options == 2:
                     clear()
@@ -238,16 +272,19 @@ def admin_menu(user_id, name):
                         simple_products(user_id, products)
                         try:
                             id_update = int(
-                                input("ID do produto que deseja alterar o estoque: "))
+                                input("ID do produto que deseja alterar o estoque: ")
+                            )
                         except ValueError:
                             print("Digite um ID válido.")
                             continue
-                        storage_update = int(
-                            input("NOVA QUANTIDADE EM ESTOQUE: "))
+                        storage_update = int(input("NOVA QUANTIDADE EM ESTOQUE: "))
                         storage_DAO.update_product_quantity(
-                            id_update, storage_update, )
+                            id_update,
+                            storage_update,
+                        )
                         print(
-                            f"O estoque do produto ID {id_update} foi alterado para -> {storage_update}un")
+                            f"O estoque do produto ID {id_update} foi alterado para -> {storage_update}un"
+                        )
                         pause()
 
                 elif update_options == 3:
@@ -258,16 +295,19 @@ def admin_menu(user_id, name):
                         simple_products(user_id, products)
                         try:
                             id_update = int(
-                                input("ID do produto que deseja alterar o estoque: "))
+                                input("ID do produto que deseja alterar o estoque: ")
+                            )
                         except ValueError:
                             print("Digite um ID válido.")
                             continue
-                        price_update = float(
-                            input("NOVO VALOR: ").replace(",", "."))
+                        price_update = float(input("NOVO VALOR: ").replace(",", "."))
                         storage_DAO.update_product_price(
-                            id_update, price_update, )
+                            id_update,
+                            price_update,
+                        )
                         print(
-                            f"O preço do produto -> ID {id_update} foi alterado para -> {price_update:.2f} R$")
+                            f"O preço do produto -> ID {id_update} foi alterado para -> {price_update:.2f} R$"
+                        )
                         pause()
 
                 elif update_options == 4:
@@ -287,8 +327,7 @@ def admin_menu(user_id, name):
             else:
                 simple_products(user_id, products)
                 try:
-                    id_delete = int(
-                        input("ID do produto que deseja deletar: "))
+                    id_delete = int(input("ID do produto que deseja deletar: "))
                 except ValueError:
                     print("Digite um ID válido.")
                 else:
@@ -302,12 +341,15 @@ def admin_menu(user_id, name):
                 print("Nenhum pedido foi realizado ainda.")
             else:
                 print(
-                    "\nID | CLIENTE | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA")
+                    "\nID | CLIENTE | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA"
+                )
                 print("-" * 70)
                 for order in orders:
                     order_price = order[3] * order[4]
-                    print(f"{order[0]} | {order[1]} | {order[2]} | {order[3]} | R$ {str(f'{order[4]}').replace('.', ',')} | R$ {str(f'{order_price:.2f}').replace(
-                        '.', ',')} | {order[5]}")
+                    print(
+                        f"{order[0]} | {order[1]} | {order[2]} | {order[3]} | R$ {str(f'{order[4]}').replace('.', ',')} | R$ {str(f'{order_price:.2f}').replace(
+                        '.', ',')} | {order[5]}"
+                    )
                 pause()
 
         elif sub_option == 6:

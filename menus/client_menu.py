@@ -1,4 +1,3 @@
-
 from menus.admin_menu import storageDAO
 from utils.utils import clear, pause
 from view.view_products import view_products
@@ -40,8 +39,7 @@ def client_menu(user_id, name):
                 pause()
                 continue
 
-            result = dao.create_new_order(
-                user_id, product_id, products_quantity)
+            result = dao.create_new_order(user_id, product_id, products_quantity)
             print(result)
             pause()
         elif options == 3:
@@ -51,12 +49,14 @@ def client_menu(user_id, name):
                 print(f"Nenhum pedido.")
             else:
                 print(
-                    "\nID | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA COMPRA")
+                    "\nID | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA COMPRA"
+                )
                 print("-" * 50)
                 for order in orders:
                     order_price = order[2] * order[3]
                     print(
-                        f"{order[0]} | {order[1]} | {order[2]} un | R$ {str(f'{order[3]:.2f} un').replace('.', ',')} | R${str(f'{order_price:.2f}').replace('.', ',')} | {order[4]}")
+                        f"{order[0]} | {order[1]} | {order[2]} un | R$ {str(f'{order[3]:.2f} un').replace('.', ',')} | R${str(f'{order_price:.2f}').replace('.', ',')} | {order[4]}"
+                    )
 
         elif options == 4:
             clear()

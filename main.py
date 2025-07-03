@@ -9,12 +9,14 @@ def main_menu():
     user_dao = UserDAO()
 
     while True:
-        print("""
+        print(
+            """
 ===== MENU PRINCIPAL =====
 [1] Cadastrar
 [2] Login
 [3] Sair
-""")
+"""
+        )
         try:
             option = int(input(f"\n [Choose an Option: "))
         except ValueError:
@@ -31,7 +33,7 @@ def main_menu():
                 continue
             isadm = input("[ADM]|[CLIENT: ] ").lower()
 
-            if isadm not in ['adm', 'client']:
+            if isadm not in ["adm", "client"]:
                 print("Tipo inválido. Use 'ADM ou 'CLIENT'.")
                 continue
             else:
