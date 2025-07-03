@@ -21,7 +21,7 @@ class storageDAO:
         self.connect = sqlite3.connect(db_path)
         self.cursor = self.connect.cursor()
         self.create_product_table()
-        self.create_order_table()
+        self.create_order()
 
     def create_product_table(self):
         self.cursor.execute("""
@@ -73,34 +73,36 @@ class storageDAO:
 
     def create_order(self):
         self.cursor.execute("""
-        CREATE TABLE IF NOT EXISTS orders(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
-        quantity INTEGER NOT NULL,
-        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) PREFERENCES users(id)
-        FOREIGN KEY (product_id) PREFERENCES products(id)                 
+        CREATE TABLE IF NOT EXISTS new_order (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            quantity INTEGER NOT NULL,
+            data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(product_id) REFERENCES products(id)               
                             )
 """)
         self.connect.commit()
 
-    def create_order(self, user_id, product_id, quantity):
+    def create_new_order(self, user_id, product_id, quantity):
         # Verificar se o produto existe e tem estoque suficiente
         self.cursor.execute("""
         SELECT quantity FROM products WHERE id = ?
 """, (product_id,))
+
         result = self.cursor.fetchone()
 
         if not result:
             return "Produto não encontrado."
+
         current_storage = result[0]
 
         if current_storage < quantity:
             return "Estoque insuficiente"
         # Registrar o pedido
         self.cursor.execute("""
-        INSERT INTO orders (user_id, products_id, quantity) VALUES (?, ?, ?)
+        INSERT INTO new_order (user_id, product_id, quantity) VALUES (?, ?, ?)
 """, (user_id, product_id, quantity)
         )
 
@@ -127,16 +129,17 @@ def detailed_products(user_id, products):
         f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {str(f'{total_price:.2f}').replace('.', ',')}")
 
 
-def simple_products(user_id, products):
+def simple_products(products):
     print("\nID | NOME | QUANTIDADE | PREÇO")
     for p in products:
         print(
             f"{p[0]} | {p[1]} | {p[2]} UN | R$ {str(f'{p[3]:.2f}').replace('.', ',')}")
 
 
-def admin_menu(user_id):
+def admin_menu(user_id, name):
     storage_DAO = storageDAO()
     while True:
+        print(f"Seja bem vindo {name}!")
         print("""
         [1] ADICIONAR PRODUTO
         [2] LISTAR

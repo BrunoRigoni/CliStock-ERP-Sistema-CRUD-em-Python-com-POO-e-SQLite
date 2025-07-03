@@ -47,11 +47,10 @@ def main_menu():
 
             if user:
                 user_id, name, mail, isadm = user
-                print(f"\n Seja bem vindo {name}!")
                 if isadm == "adm":
-                    admin_menu(user_id)
+                    admin_menu(user_id, name)
                 elif isadm == "client":
-                    client_menu(name)
+                    client_menu(user_id, name)
                 else:
                     print("Tipo de usuário inválido.")
                     pause()
