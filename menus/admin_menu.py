@@ -55,7 +55,8 @@ class storageDAO:
         return self.cursor.fetchall()
 
     def update_product_name(self, id, new_name):
-        self.cursor.execute("UPDATE products SET name = ? WHERE id = ?", (new_name, id))
+        self.cursor.execute(
+            "UPDATE products SET name = ? WHERE id = ?", (new_name, id))
         self.connect.commit()
 
     def update_product_quantity(self, id, new_quantity):
@@ -168,11 +169,13 @@ def detailed_products(user_id, products):
         subtotal = p[2] * p[3]
         total_price += subtotal
         print(
-            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {p[3]:.2f} | R$ {str(f'{subtotal:.2f}').replace('.', ',')}"
+            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {p[3]:.2f} | R$ {str(f'{subtotal:.2f}').replace(
+                '.', ',')}"
         )
     print("-" * 50)
     print(
-        f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {str(f'{total_price:.2f}').replace('.', ',')}"
+        f"TOTAL GERAL DO ESTOQUE DO ADM ({user_id}): R$ {str(f'{total_price:.2f}').replace(
+            '.', ',')}"
     )
 
 
@@ -180,7 +183,8 @@ def simple_products(products):
     print("\nID | NOME | QUANTIDADE | PREÇO")
     for p in products:
         print(
-            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {str(f'{p[3]:.2f}').replace('.', ',')}"
+            f"{p[0]} | {p[1]} | {p[2]} UN | R$ {str(f'{p[3]:.2f}').replace(
+                '.', ',')}"
         )
 
 
@@ -195,7 +199,7 @@ def admin_menu(user_id, name):
         [3] ATUALIZAR PRODUTO
         [4] REMOVER PRODUTO
         [5] VER TODOS OS PEDIDOS
-        [6] VOLTAR
+        [6] SAIR
  """
         )
         try:
@@ -210,7 +214,8 @@ def admin_menu(user_id, name):
             product_name = input("NOME DO PRODUTO: ")
             product_quantity = int(input("QUANTIDADE: UN"))
             product_price = float(input("PREÇO: R$").replace(",", "."))
-            new_product = Product(product_name, product_quantity, product_price)
+            new_product = Product(
+                product_name, product_quantity, product_price)
             storage_DAO.add_product(new_product, user_id)
             clear()
             print(
@@ -231,10 +236,10 @@ def admin_menu(user_id, name):
             while True:
                 print(
                     """
-[1]ATUALIZAR NOME
-[2]ATUALIZAR ESTOQUE
-[3]ATUALIZAR PREÇO
-[4] SAIR
+[1] ATUALIZAR NOME
+[2] ATUALIZAR ESTOQUE
+[3] ATUALIZAR PREÇO
+[4] VOLTAR
                       """
                 )
                 products = storage_DAO.show_products(user_id)
@@ -272,12 +277,14 @@ def admin_menu(user_id, name):
                         simple_products(user_id, products)
                         try:
                             id_update = int(
-                                input("ID do produto que deseja alterar o estoque: ")
+                                input(
+                                    "ID do produto que deseja alterar o estoque: ")
                             )
                         except ValueError:
                             print("Digite um ID válido.")
                             continue
-                        storage_update = int(input("NOVA QUANTIDADE EM ESTOQUE: "))
+                        storage_update = int(
+                            input("NOVA QUANTIDADE EM ESTOQUE: "))
                         storage_DAO.update_product_quantity(
                             id_update,
                             storage_update,
@@ -295,12 +302,14 @@ def admin_menu(user_id, name):
                         simple_products(user_id, products)
                         try:
                             id_update = int(
-                                input("ID do produto que deseja alterar o estoque: ")
+                                input(
+                                    "ID do produto que deseja alterar o estoque: ")
                             )
                         except ValueError:
                             print("Digite um ID válido.")
                             continue
-                        price_update = float(input("NOVO VALOR: ").replace(",", "."))
+                        price_update = float(
+                            input("NOVO VALOR: ").replace(",", "."))
                         storage_DAO.update_product_price(
                             id_update,
                             price_update,
@@ -327,7 +336,8 @@ def admin_menu(user_id, name):
             else:
                 simple_products(user_id, products)
                 try:
-                    id_delete = int(input("ID do produto que deseja deletar: "))
+                    id_delete = int(
+                        input("ID do produto que deseja deletar: "))
                 except ValueError:
                     print("Digite um ID válido.")
                 else:
@@ -348,7 +358,7 @@ def admin_menu(user_id, name):
                     order_price = order[3] * order[4]
                     print(
                         f"{order[0]} | {order[1]} | {order[2]} | {order[3]} | R$ {str(f'{order[4]}').replace('.', ',')} | R$ {str(f'{order_price:.2f}').replace(
-                        '.', ',')} | {order[5]}"
+                            '.', ',')} | {order[5]}"
                     )
                 pause()
 
