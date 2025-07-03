@@ -80,7 +80,7 @@ class storageDAO:
             quantity INTEGER NOT NULL,
             data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id),
-            FOREIGN KEY(product_id) REFERENCES products(id)               
+            FOREIGN KEY(product_id) REFERENCES products(id)
                             )
 """)
         self.connect.commit()
@@ -115,6 +115,26 @@ class storageDAO:
         self.connect.commit()
         return "Pedido realizado com sucesso!"
 
+    def get_client_orders(self, user_id,):
+        self.cursor.execute("""
+        SELECT o.id, p.name, o.quantity, p.price, o.data
+        FROM new_order o
+        JOIN products p ON o.product_id = p.id
+        WHERE o.user_id = ?
+        ORDER BY o.data DESC
+ """, (user_id,))
+        return self.cursor.fetchall()
+
+    def get_all_orders(self):
+        self.cursor.execute("""
+        SELECT o.id, u.name AS client, p.name AS products, o.quantity, p.price, o.data
+        FROM new_order o
+        JOIN users u ON o.user_id = u.id
+        JOIN products p ON o.product_id = p.id
+        ORDER BY o.data DESC
+ """)
+        return self.cursor.fetchall()
+
 
 def detailed_products(user_id, products):
     total_price = 0
@@ -145,7 +165,8 @@ def admin_menu(user_id, name):
         [2] LISTAR
         [3] ATUALIZAR PRODUTO
         [4] REMOVER PRODUTO
-        [5] VOLTAR
+        [5] VER TODOS OS PEDIDOS
+        [6] VOLTAR
  """)
         try:
             sub_option = int(input("\nDIGITE A OPÇÃO: "))
@@ -275,6 +296,21 @@ def admin_menu(user_id, name):
                     print(f"Produto com ID {id_delete} removido com sucesso.")
 
         elif sub_option == 5:
+            clear()
+            orders = storage_DAO.get_all_orders()
+            if not orders:
+                print("Nenhum pedido foi realizado ainda.")
+            else:
+                print(
+                    "\nID | CLIENTE | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA")
+                print("-" * 70)
+                for order in orders:
+                    order_price = order[3] * order[4]
+                    print(f"{order[0]} | {order[1]} | {order[2]} | {order[3]} | R$ {str(f'{order[4]}').replace('.', ',')} | R$ {str(f'{order_price:.2f}').replace(
+                        '.', ',')} | {order[5]}")
+                pause()
+
+        elif sub_option == 6:
             print("SAINDO")
             break
 

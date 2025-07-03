@@ -10,7 +10,9 @@ def client_menu(user_id, name):
         print(f"\n[CLIENTE] Bem-vindo, {name}")
         print("[1] VER PRODUTOS")
         print("[2] FAZER PEDIDO")
-        print("[3] SAIR")
+        print("[3] MEUS PEDIDOS")
+        print("[4] SAIR")
+
         try:
             options = int(input("OPÇÃO QUE DESEJA REALIZAR: "))
         except ValueError:
@@ -42,8 +44,21 @@ def client_menu(user_id, name):
                 user_id, product_id, products_quantity)
             print(result)
             pause()
-
         elif options == 3:
+            clear()
+            orders = dao.get_client_orders(user_id)
+            if not orders:
+                print(f"Nenhum pedido.")
+            else:
+                print(
+                    "\nID | PRODUTO | QUANTIDADE | VALOR un | VALOR TOTAL | DATA COMPRA")
+                print("-" * 50)
+                for order in orders:
+                    order_price = order[2] * order[3]
+                    print(
+                        f"{order[0]} | {order[1]} | {order[2]} un | R$ {str(f'{order[3]:.2f} un').replace('.', ',')} | R${str(f'{order_price:.2f}').replace('.', ',')} | {order[4]}")
+
+        elif options == 4:
             clear()
             print(f"Saindo...")
             break
