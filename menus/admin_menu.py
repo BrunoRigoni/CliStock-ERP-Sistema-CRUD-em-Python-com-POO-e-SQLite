@@ -66,6 +66,10 @@ class storageDAO:
         self.cursor.execute("DELETE FROM products WHERE id = ?", (id,))
         self.connect.commit()
 
+    def get_produtcs_client(self):
+        self.cursor.execute("SELECT id, name, quantity, price FROM products")
+        return self.cursor.fetchall()
+
 
 def detailed_products(user_id, products):
     total_price = 0
